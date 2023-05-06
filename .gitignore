@@ -2,4 +2,5 @@
 /Cargo.lock
 reveal.iml
 reveal_macro/target
+reveal_macro/Cargo.lock
 .idea
