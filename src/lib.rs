@@ -16,11 +16,11 @@ impl Error {
         &self.context
     }
 
-    pub fn source(&self) -> &(dyn StdError + Send + Sync) {
+    pub fn source(&self) -> &(dyn StdError + Send + Sync + 'static) {
         return &*self.source;
     }
 
-    pub fn unwrap(self) -> (Box<dyn StdError + Send + Sync>, Vec<Context>) {
+    pub fn unwrap(self) -> (Box<dyn StdError + Send + Sync + 'static>, Vec<Context>) {
         (self.source, self.context)
     }
 
