@@ -45,8 +45,10 @@ impl Error {
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         Display::fmt(&self.source, f)?;
+        let mut i = 0;
         for v in &self.context {
-            f.write_str("\n")?;
+            write!(f, "\n{}: ", i)?;
+            i += 1;
             Display::fmt(v, f)?;
         }
         Ok(())
@@ -86,7 +88,7 @@ impl Context {
 
 impl Display for Context {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}:{}: {} @ ", self.file, self.line, self.source)?;
+        write!(f, "{}\n\t\tin ", self.source)?;
         f.write_str(self.func)?;
         f.write_char('(')?;
         for i in 0..self.args.len() {
@@ -95,7 +97,7 @@ impl Display for Context {
                 f.write_str(", ")?;
             }
         }
-        f.write_char(')')
+        write!(f, ")\n\t\tat {}:{}", self.file, self.line)
     }
 }
 
