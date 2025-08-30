@@ -1,0 +1,14 @@
+[package]
+name = "reveal-macros"
+version = "0.1.1"
+edition = "2024"
+description = "A procedural macro that adds location to errors"
+license = "MIT"
+repository = "https://github.com/luoshuqi/reveal"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1.0.40"
+syn = { version = "2.0.106", features = ["full", "visit-mut"] }

@@ -1,0 +1,23 @@
+[package]
+name = "reveal"
+version = "0.1.1"
+edition = "2024"
+description = "Add location and message to errors"
+license = "MIT"
+repository = "https://github.com/luoshuqi/reveal"
+
+[lib]
+
+
+[dependencies]
+reveal-macros = { version = "0.1.1", path = "reveal-macros" }
+serde = { version = "1.0.219", optional = true }
+serde-wasm-bindgen = { version = "0.6.5", optional = true }
+wasm-bindgen = { version = "0.2.100", optional = true }
+
+[features]
+default = ["send_sync"]
+send_sync = []
+serde = ["dep:serde"]
+serde-wasm-bindgen = ["dep:serde-wasm-bindgen"]
+wasm-bindgen = ["dep:wasm-bindgen"]
