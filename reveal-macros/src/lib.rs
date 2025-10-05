@@ -8,14 +8,14 @@ use syn::visit_mut::{VisitMut, visit_expr_try_mut, visit_impl_item_fn_mut};
 use syn::{ExprTry, ImplItemFn, ItemFn, ItemImpl, Type, parse_macro_input, parse_quote_spanned};
 
 #[proc_macro_attribute]
-pub fn map_err(_: TokenStream, input: TokenStream) -> TokenStream {
+pub fn chain_err(_: TokenStream, input: TokenStream) -> TokenStream {
     match parse_macro_input!(input as Item) {
         Item::Fn(mut f) => {
-            MapErr::new(None, Some(f.sig.ident.to_string())).visit_item_fn_mut(&mut f);
+            ChainErr::new(None, Some(f.sig.ident.to_string())).visit_item_fn_mut(&mut f);
             quote!(#f).into()
         }
         Item::Impl(mut i) => {
-            MapErr::new(Some(i.self_ty.clone()), None).visit_item_impl_mut(&mut i);
+            ChainErr::new(Some(i.self_ty.clone()), None).visit_item_impl_mut(&mut i);
             quote!(#i).into()
         }
     }
@@ -45,18 +45,18 @@ impl Parse for Item {
     }
 }
 
-struct MapErr {
+struct ChainErr {
     self_ty: Option<Box<Type>>,
     ident: Option<String>,
 }
 
-impl MapErr {
+impl ChainErr {
     fn new(self_ty: Option<Box<Type>>, ident: Option<String>) -> Self {
         Self { self_ty, ident }
     }
 }
 
-impl VisitMut for MapErr {
+impl VisitMut for ChainErr {
     fn visit_expr_try_mut(&mut self, i: &mut ExprTry) {
         let ident = self.ident.as_ref().unwrap();
         let module = match self.self_ty {
@@ -73,7 +73,7 @@ impl VisitMut for MapErr {
     fn visit_impl_item_fn_mut(&mut self, i: &mut ImplItemFn) {
         let mut indices = vec![];
         for (i, attr) in i.attrs.iter().enumerate() {
-            if attr.path().is_ident("map_err") {
+            if attr.path().is_ident("chain_err") {
                 indices.push(i);
             }
         }

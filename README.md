@@ -18,10 +18,10 @@ cargo add reveal
 
 ## Examples
 
-Here's a basic example demonstrating how to use the `map_err` macro to add context to errors:
+Here's a basic example demonstrating how to use the `chain_err` macro to add context to errors:
 
 ```rust
-use reveal::map_err;
+use reveal::chain_err;
 
 fn main() {
     if let Err(e) = run() {
@@ -29,7 +29,7 @@ fn main() {
     }
 }
 
-#[map_err]
+#[chain_err]
 fn run() -> reveal::Result<()> {
     App.load_config()?;
     Ok(())
@@ -37,16 +37,16 @@ fn run() -> reveal::Result<()> {
 
 struct App;
 
-#[map_err]
+#[chain_err]
 impl App {
-    #[map_err]
+    #[chain_err]
     fn load_config(&self) -> reveal::Result<Vec<u8>> {
         let config = file_get_contents("non_exists_config.toml")?;
         Ok(config)
     }
 }
 
-#[map_err]
+#[chain_err]
 fn file_get_contents(path: &str) -> reveal::Result<Vec<u8>> {
     fn read(path: &str) -> reveal::Result<Vec<u8>> {
         Ok(std::fs::read(path)?)

@@ -5,7 +5,7 @@ use std::fmt::{Debug, Display, Formatter};
 use std::mem::ManuallyDrop;
 use std::ptr;
 
-pub use reveal_macros::map_err;
+pub use reveal_macros::chain_err;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
