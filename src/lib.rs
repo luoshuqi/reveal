@@ -7,6 +7,13 @@ use std::ptr;
 
 pub use reveal_macros::chain_err;
 
+#[macro_export]
+macro_rules! map_err {
+    ($result:expr, $func_name:expr $(,$msg:expr)*) => {
+        $result.map_err(|e| reveal::Error::chain(e, file!(), line!(), $func_name, module_path!())$(.context($msg))*)
+    };
+}
+
 pub type Result<T> = std::result::Result<T, Error>;
 
 use inner::*;

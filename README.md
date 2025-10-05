@@ -21,7 +21,7 @@ cargo add reveal
 Here's a basic example demonstrating how to use the `chain_err` macro to add context to errors:
 
 ```rust
-use reveal::chain_err;
+use reveal::{chain_err, map_err};
 
 fn main() {
     if let Err(e) = run() {
@@ -41,18 +41,12 @@ struct App;
 impl App {
     #[chain_err]
     fn load_config(&self) -> reveal::Result<Vec<u8>> {
-        let config = file_get_contents("non_exists_config.toml")?;
-        Ok(config)
+        Ok(read("non_exists_config.toml")?)
     }
 }
 
-#[chain_err]
-fn file_get_contents(path: &str) -> reveal::Result<Vec<u8>> {
-    fn read(path: &str) -> reveal::Result<Vec<u8>> {
-        Ok(std::fs::read(path)?)
-    }
-
-    read(path).map_err(|err| err.context(format!("Failed to read file `{}`", path)))
+fn read(path: &str) -> reveal::Result<Vec<u8>> {
+    map_err!(std::fs::read(path), "read", path)
 }
 ```
 
@@ -61,8 +55,8 @@ fn file_get_contents(path: &str) -> reveal::Result<Vec<u8>> {
 When the above example is run, it produces the following output:
 
 ```
-Failed to read file `non_exists_config.toml`: No such file or directory (os error 2)
-#0 src/main.rs:29 demo::file_get_contents()
+non_exists_config.toml: No such file or directory (os error 2)
+#0 src/main.rs:26 demo::read()
 #1 src/main.rs:21 demo::App::load_config()
 #2 src/main.rs:11 demo::run()
 ```
