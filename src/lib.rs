@@ -223,6 +223,36 @@ impl Display for Location {
     }
 }
 
+pub trait WithContext {
+    type Ok;
+
+    fn context(self, context: impl ToString) -> Result<Self::Ok>;
+}
+
+impl<T, E> WithContext for std::result::Result<T, E>
+where
+    E: ErrorTrait + 'static,
+{
+    type Ok = T;
+
+    fn context(self, context: impl ToString) -> Result<<Self as WithContext>::Ok> {
+        match self {
+            Ok(v) => Ok(v),
+            Err(e) if TypeId::of::<E>() == TypeId::of::<Error>() => {
+                let e = ManuallyDrop::new(e);
+                let mut e = unsafe { ptr::read(&raw const e as *const Error) };
+                e.0.context.push(context.to_string());
+                Err(e)
+            }
+            Err(e) => Err(Error(Box::new(Inner {
+                source: Box::new(e),
+                location: Some(Vec::new()),
+                context: vec![context.to_string()],
+            }))),
+        }
+    }
+}
+
 #[cfg(all(
     feature = "wasm-bindgen",
     any(not(feature = "serde"), not(feature = "serde-wasm-bindgen"))
