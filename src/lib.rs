@@ -14,6 +14,20 @@ macro_rules! map_err {
     };
 }
 
+#[macro_export]
+macro_rules! error {
+    ($($args:tt)*) => {
+        reveal::StrErr(format!($($args)*))
+    };
+}
+
+#[macro_export]
+macro_rules! plain {
+    ($($args:tt)*) => {
+        reveal::Error::plain(format!($($args)*))
+    };
+}
+
 pub type Result<T> = std::result::Result<T, Error>;
 
 use inner::*;
@@ -252,6 +266,18 @@ where
         }
     }
 }
+
+#[derive(Debug)]
+pub struct StrErr(pub String);
+
+impl Display for StrErr {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl std::error::Error for StrErr {}
+
 
 #[cfg(all(
     feature = "wasm-bindgen",
